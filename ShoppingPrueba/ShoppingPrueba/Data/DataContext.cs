@@ -13,13 +13,14 @@ namespace ShoppingPrueba.Data
         {
    
         }
-
+        public DbSet<Category> Categories { get; set; }
         public DbSet<Country> countries { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Country>().HasIndex(c => c.Name).IsUnique();
+            modelBuilder.Entity<Category>().HasIndex(c => c.Name).IsUnique();
         }
     }
 }

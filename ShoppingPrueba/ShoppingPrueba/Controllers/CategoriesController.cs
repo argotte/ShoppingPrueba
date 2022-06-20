@@ -1,46 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShoppingPrueba.Data;
 using ShoppingPrueba.Data.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ShoppingPrueba.Controllers
 {
-    public class CountriesController : Controller
+    public class CategoriesController : Controller
     {
         private readonly DataContext _context;
-
-        public CountriesController(DataContext context)
+        public CategoriesController(DataContext context)
         {
             _context = context;
         }
-
-        // GET: Countries
         public async Task<IActionResult> Index()
         {
-            return View(await _context.countries.ToListAsync());
-        }
-
-        // GET: Countries/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var country = await _context.countries
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (country == null)
-            {
-                return NotFound();
-            }
-
-            return View(country);
+            return View(await _context.Categories.ToListAsync());
         }
 
         [HttpGet]
@@ -50,19 +28,19 @@ namespace ShoppingPrueba.Controllers
             return View();
         }
 
-       
+
         // POST: Countries/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] Country country)
+        public async Task<IActionResult> Create([Bind("Id,Name")] Category categories)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Add(country);
+                    _context.Add(categories);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
@@ -70,7 +48,7 @@ namespace ShoppingPrueba.Controllers
                 {
                     if (dbUpdateException.InnerException.Message.Contains("duplicate"))
                     {
-                        ModelState.AddModelError(string.Empty, "Ya existe un país con el mismo nombre.");
+                        ModelState.AddModelError(string.Empty, "Ya existe una categoría con el mismo nombre.");
                     }
                     else
                     {
@@ -82,9 +60,10 @@ namespace ShoppingPrueba.Controllers
                     ModelState.AddModelError(string.Empty, exception.Message);
                 }
             }
-            return View(country);
+            return View(categories);
 
         }
+
         [HttpGet]
         // GET: Countries/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -94,12 +73,12 @@ namespace ShoppingPrueba.Controllers
                 return NotFound();
             }
 
-            var country = await _context.countries.FindAsync(id);
-            if (country == null)
+            var categories = await _context.Categories.FindAsync(id);
+            if (categories == null)
             {
                 return NotFound();
             }
-            return View(country);
+            return View(categories);
         }
 
         // POST: Countries/Edit/5
@@ -107,9 +86,9 @@ namespace ShoppingPrueba.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,MyProperty")] Country country)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Category Categories)
         {
-            if (id != country.Id)
+            if (id != Categories.Id)
             {
                 return NotFound();
             }
@@ -118,14 +97,15 @@ namespace ShoppingPrueba.Controllers
             {
                 try
                 {
-                    _context.Update(country);
+                    _context.Update(Categories);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException dbUpdateException)
                 {
                     if (dbUpdateException.InnerException.Message.Contains("duplicate"))
                     {
-                        ModelState.AddModelError(string.Empty, "Ya existe un país con el mismo nombre.");
+                        ModelState.AddModelError(string.Empty, "Ya existe una categoría con el mismo nombre.");
                     }
                     else
                     {
@@ -137,7 +117,7 @@ namespace ShoppingPrueba.Controllers
                     ModelState.AddModelError(string.Empty, exception.Message);
                 }
             }
-            return View(country);
+            return View(Categories);
         }
 
         // GET: Countries/Delete/5
@@ -148,14 +128,14 @@ namespace ShoppingPrueba.Controllers
                 return NotFound();
             }
 
-            var country = await _context.countries
+            var categories = await _context.Categories
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (country == null)
+            if (categories == null)
             {
                 return NotFound();
             }
 
-            return View(country);
+            return View(categories);
         }
 
         // POST: Countries/Delete/5
@@ -163,10 +143,27 @@ namespace ShoppingPrueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var country = await _context.countries.FindAsync(id);
-            _context.countries.Remove(country);
+            var categories = await _context.Categories.FindAsync(id);
+            _context.Categories.Remove(categories);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var categories = await _context.Categories
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (categories == null)
+            {
+                return NotFound();
+            }
+
+            return View(categories);
         }
 
 
