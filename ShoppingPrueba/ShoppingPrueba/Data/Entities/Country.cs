@@ -15,6 +15,11 @@ namespace ShoppingPrueba.Data.Entities
         [Required(ErrorMessage  = "El campo {0} es obligatorio")]
         public String Name { get; set; }
 
+        public ICollection<States> States { get; set; }
+
+        [Display(Name ="Estados")]
+        public int StatesNumber => States == null ? 0: States.Count;
+
       //  public int MyProperty { get; set; }
     }
 }

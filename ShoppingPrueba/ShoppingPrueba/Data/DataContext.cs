@@ -13,6 +13,9 @@ namespace ShoppingPrueba.Data
         {
    
         }
+
+        public DbSet<City> Cities { get; set; }
+        public DbSet<States> States { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Country> countries { get; set; }
 
@@ -21,6 +24,9 @@ namespace ShoppingPrueba.Data
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Country>().HasIndex(c => c.Name).IsUnique();
             modelBuilder.Entity<Category>().HasIndex(c => c.Name).IsUnique();
+            modelBuilder.Entity<States>().HasIndex("Name","CountryId").IsUnique();
+            modelBuilder.Entity<City>().HasIndex("Name", "StateId").IsUnique();
+
         }
     }
 }
