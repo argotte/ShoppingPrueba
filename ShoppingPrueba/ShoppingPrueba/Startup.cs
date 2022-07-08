@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Shooping.Data;
 using ShoppingPrueba.Data;
 using System;
 using System.Collections.Generic;
@@ -31,8 +32,15 @@ namespace ShoppingPrueba
                 o.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             }
             );
+            services.AddTransient<SeedDb>(); //se inyecta y se ejecuta 1 sola vez y la destruye
+            //services.AddScope<SeedDb>();//se inyecta y se ejecuta cada vez que la necesita y la destruyte cuando la deja de usar
+            //services.AddSingleton<>(); //lo inyecta y no lo destruye sino q lo  deja enmemoria
+       
             services.AddRazorPages().AddRazorRuntimeCompilation();
         }
+   
+
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
