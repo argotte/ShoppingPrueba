@@ -1,6 +1,9 @@
 ﻿
 using ShoppingPrueba.Data;
 using ShoppingPrueba.Data.Entities;
+using ShoppingPrueba.Enum;
+using ShoppingPrueba.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,10 +13,12 @@ namespace Shooping.Data
     public class SeedDb
     {
         private readonly DataContext _context;
+        private readonly IUserHelper _userHelper;
 
-        public SeedDb(DataContext context)
+        public SeedDb(DataContext context, IUserHelper userHelper)
         {
             _context = context;
+            _userHelper = userHelper;
         }
 
         public async Task SeedAsync()
@@ -21,6 +26,49 @@ namespace Shooping.Data
             await _context.Database.EnsureCreatedAsync();
             await CheckCountriesAsync();
             await CheckCategoriesAsync();
+            await CheckRolesAsync();
+            await CheckUserAsync("1010", "Juan", "Rod", "zulu@yopmail.com", "3211232", "Avenida Solano", UserType.Admin);
+
+        }
+
+        private async Task<User> CheckUserAsync(
+            string document,
+            string firstName,
+            string lastName,
+            string email,
+            string phone,
+            string address,
+            UserType userType)
+        {
+            User user = await _userHelper.GetUserAsync(email);
+            if (user == null)
+            {
+                user = new User
+                {
+                    FirstName = firstName,
+                    LastName = lastName,
+                    Email = email,
+                    UserName = email,
+                    PhoneNumber = phone,
+                    Address = address,
+                    Document = document,
+                    City = _context.Cities.FirstOrDefault(),
+                    UserType = userType,
+                };
+
+                await _userHelper.AddUserAsync(user, "123456");
+                await _userHelper.AddUserToRoleAsync(user, userType.ToString());
+            }
+
+            return user;
+        }
+
+
+        private async Task CheckRolesAsync()
+        {
+
+            await _userHelper.CheckRoleAsync(UserType.Admin.ToString());
+            await _userHelper.CheckRoleAsync(UserType.User.ToString());
 
         }
 
@@ -32,6 +80,7 @@ namespace Shooping.Data
                 _context.Categories.Add(new Category { Name = "Ropa" });
                 _context.Categories.Add(new Category { Name = "Gamer" });
                 _context.Categories.Add(new Category { Name = "Belleza" });
+                _context.Categories.Add(new Category { Name = "Apple" });
                 _context.Categories.Add(new Category { Name = "Nutrición" });
             }
 

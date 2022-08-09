@@ -15,6 +15,6 @@ namespace ShoppingPrueba.Data.Entities
         [Required(ErrorMessage = "El campo {0} es obligatorio")]
         public String Name { get; set; }
         public States State { get; set; }
-       // public int 
+        public ICollection<User> Users { get; set; }
     }
 }
