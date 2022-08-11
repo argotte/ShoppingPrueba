@@ -47,7 +47,8 @@ namespace ShoppingPrueba.Helpers
             }
         }
 
-        public async Task<User> GetUserAsync(string email)
+        public async Task<User> GetUserAsync(string email)//se va al contexto ddatos y busca un suuario cuyo email seea igual el email q mendaron
+                                                          //// pero como el usuario tiene relacion con ciudd lo quiero con city y todo
         {
             return await _context.Users.Include(u => u.City).FirstOrDefaultAsync(u => u.Email == email);
         }
@@ -60,6 +61,11 @@ namespace ShoppingPrueba.Helpers
         public async Task<SignInResult> LoginAsync(LoginViewModel model)
         {
             return await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, false);
+        }
+
+        public async Task LogoutAsync()
+        {
+            await _signInManager.SignOutAsync();
         }
     }
 }

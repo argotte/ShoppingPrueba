@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using ShoppingPrueba.Data.Entities;
+using ShoppingPrueba.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,10 @@ namespace ShoppingPrueba.Helpers
         Task AddUserToRoleAsync(User user, string roleName);//asigna si un rol pertenece a usuarios o admins
 
         Task<bool> IsUserInRoleAsync(User user, string roleName);//Verifica con booleano si dice si es admin o user
+
+        Task<SignInResult> LoginAsync(LoginViewModel model);
+
+        Task LogoutAsync();
 
     }
 }
