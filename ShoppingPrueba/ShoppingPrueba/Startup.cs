@@ -58,6 +58,7 @@ namespace ShoppingPrueba
             //services.AddScope<SeedDb>();//se inyecta y se ejecuta cada vez que la necesita y la destruyte cuando la deja de usar
             //services.AddSingleton<>(); //lo inyecta y no lo destruye sino q lo  deja enmemoria
             services.AddScoped<IUserHelper, UserHelper>();
+            services.AddScoped<ICombosHelper, CombosHelper>();
             services.AddRazorPages().AddRazorRuntimeCompilation();
         }
    
