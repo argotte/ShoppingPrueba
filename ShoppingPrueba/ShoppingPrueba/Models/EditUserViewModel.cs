@@ -1,15 +1,17 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using ShoppingPrueba.Enum;
 
-namespace ShoppingPrueba.Data.Entities
+namespace ShoppingPrueba.Models
 {
-    public class User : IdentityUser
+    public class EditUserViewModel
     {
+        public string Id { get; set; }
+
         [Display(Name = "Documento")]
         [MaxLength(20, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
@@ -25,13 +27,15 @@ namespace ShoppingPrueba.Data.Entities
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string LastName { get; set; }
 
-        [Display(Name = "Ciudad")]
-        public City City { get; set; }
-
         [Display(Name = "Dirección")]
         [MaxLength(200, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Address { get; set; }
+
+        [Display(Name = "Teléfono")]
+        [MaxLength(20, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
+        public string PhoneNumber { get; set; }
 
         [Display(Name = "Foto")]
         public Guid ImageId { get; set; }
@@ -39,18 +43,31 @@ namespace ShoppingPrueba.Data.Entities
         //TODO: Pending to put the correct paths
         [Display(Name = "Foto")]
         public string ImageFullPath => ImageId == Guid.Empty
-            ? $"https://localhost:44387/images/noimage.png"
+            ? $"https://localhost:7057/images/noimage.png"
             : $"https://shoppingzulu.blob.core.windows.net/users/{ImageId}";
 
-        [Display(Name = "Tipo de usuario")]
-        public UserType UserType { get; set; }
+        [Display(Name = "Image")]
+        public IFormFile ImageFile { get; set; }
 
+        [Display(Name = "País")]
+        [Range(1, int.MaxValue, ErrorMessage = "Debes de seleccionar un país.")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
+        public int CountryId { get; set; }
 
-        [Display(Name = "Usuario")]
-        public string FullName => $"{FirstName} {LastName}";
+        public IEnumerable<SelectListItem> Countries { get; set; }
 
-        [Display(Name = "Usuario")]
-        public string FullNameWithDocument => $"{FirstName} {LastName} - {Document}";
+        [Display(Name = "Departmento/Estado")]
+        [Range(1, int.MaxValue, ErrorMessage = "Debes de seleccionar un departamento/estado.")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
+        public int StateId { get; set; }
 
+        public IEnumerable<SelectListItem> States { get; set; }
+
+        [Display(Name = "Ciudad")]
+        [Range(1, int.MaxValue, ErrorMessage = "Debes de seleccionar una ciudad.")]
+        public int CityId { get; set; }
+
+        public IEnumerable<SelectListItem> Cities { get; set; }
     }
+
 }

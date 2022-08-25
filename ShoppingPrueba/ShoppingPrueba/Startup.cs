@@ -59,6 +59,7 @@ namespace ShoppingPrueba
             //services.AddSingleton<>(); //lo inyecta y no lo destruye sino q lo  deja enmemoria
             services.AddScoped<IUserHelper, UserHelper>();
             services.AddScoped<ICombosHelper, CombosHelper>();
+            services.AddScoped<IBlobHelper, BlobHelper>();
             services.AddRazorPages().AddRazorRuntimeCompilation();
         }
    

@@ -13,6 +13,7 @@ namespace ShoppingPrueba.Helpers
         Task<User> GetUserAsync(string email);//es asincrono
 
         Task<IdentityResult> AddUserAsync(User user, string password);//Crea usuarios con su pw
+        Task<User> AddUserAsync(AddUserViewModel model);//Crea usuarios con su pw
 
         Task CheckRoleAsync(string roleName);//Chequea si un rol no existe: Si no existe lo crea
 

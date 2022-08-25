@@ -97,25 +97,25 @@ namespace ShoppingPrueba.Helpers
             return list;
         }
 
-        Task<IEnumerable<SelectListItem>> ICombosHelper.GetComboCategoriesAsync()
-        {
-            throw new NotImplementedException();
-        }
+    //    Task<IEnumerable<SelectListItem>> ICombosHelper.GetComboCategoriesAsync()
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
-        Task<IEnumerable<SelectListItem>> ICombosHelper.GetComboCitiesAsync(int stateId)
-        {
-            throw new NotImplementedException();
-        }
+    //    Task<IEnumerable<SelectListItem>> ICombosHelper.GetComboCitiesAsync(int stateId)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
-        Task<IEnumerable<SelectListItem>> ICombosHelper.GetComboCountriesAsync()
-        {
-            throw new NotImplementedException();
-        }
+    //    Task<IEnumerable<SelectListItem>> ICombosHelper.GetComboCountriesAsync()
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
-        Task<IEnumerable<SelectListItem>> ICombosHelper.GetComboStatesAsync(int countryId)
-        {
-            throw new NotImplementedException();
-        }
+    //    Task<IEnumerable<SelectListItem>> ICombosHelper.GetComboStatesAsync(int countryId)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
     }
 
 }
