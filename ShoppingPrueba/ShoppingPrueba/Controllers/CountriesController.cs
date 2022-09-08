@@ -186,7 +186,7 @@ namespace ShoppingPrueba.Controllers
             {
                 try
                 {
-                    States state = new()
+                    State state = new()
                     {
                         Id = model.Id,
                         Name = model.Name,
@@ -357,7 +357,7 @@ namespace ShoppingPrueba.Controllers
                 return NotFound();
             }
 
-            States state = await _context.States.Include(c => c.Country).Include(c=>c.Cities)
+            State state = await _context.States.Include(c => c.Country).Include(c=>c.Cities)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (state == null)
             {
@@ -372,7 +372,7 @@ namespace ShoppingPrueba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteState(int id)
         {
-            States state = await _context.States.Include(c => c.Country).Include(c=>c.Cities).FirstOrDefaultAsync(m => m.Id == id);
+            State state = await _context.States.Include(c => c.Country).Include(c=>c.Cities).FirstOrDefaultAsync(m => m.Id == id);
                 //foreach (var item in state)
                 // {
                 //    _context.Cities.RemoveRange(item.Cities);
@@ -445,7 +445,7 @@ namespace ShoppingPrueba.Controllers
             {
                 try
                 {
-                    States state = new States()
+                    State state = new State()
                     {
                         Cities = new List<City>(),
                         Country = await _context.countries.FindAsync(model.CountryId),
@@ -482,7 +482,7 @@ namespace ShoppingPrueba.Controllers
                 return NotFound();
             }
 
-            States state = await _context.States.FindAsync(id);
+            State state = await _context.States.FindAsync(id);
             if (state == null) return NotFound();
 
             CityViewModel model = new()

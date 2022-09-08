@@ -96,9 +96,5 @@ namespace ShoppingPrueba.Helpers
             await _signInManager.SignOutAsync();
         }
 
-        Task<User> IUserHelper.AddUserAsync(AddUserViewModel model)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

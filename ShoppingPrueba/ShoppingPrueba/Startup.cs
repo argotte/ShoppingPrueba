@@ -46,7 +46,8 @@ namespace ShoppingPrueba
                 cfg.Password.RequireUppercase = false;
                 //cfg.Password.RequiredLength = 6;
             }).AddEntityFrameworkStores<DataContext>();
-           
+
+
             services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = "/Account/NotAuthorized";
@@ -54,7 +55,7 @@ namespace ShoppingPrueba
             });
 
 
-            services.AddTransient<SeedDb>(); //se inyecta y se ejecuta 1 sola vez y la destruye
+            services.AddScoped<SeedDb>(); //se inyecta y se ejecuta 1 sola vez y la destruye
             //services.AddScope<SeedDb>();//se inyecta y se ejecuta cada vez que la necesita y la destruyte cuando la deja de usar
             //services.AddSingleton<>(); //lo inyecta y no lo destruye sino q lo  deja enmemoria
             services.AddScoped<IUserHelper, UserHelper>();
@@ -82,18 +83,18 @@ namespace ShoppingPrueba
             app.UseStatusCodePagesWithReExecute("/error/{0}");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
-            app.UseRouting();
-
-            app.UseAuthorization();
             app.UseAuthentication();
-
+           
+            
+            app.UseRouting();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+            
         }
     }
 }

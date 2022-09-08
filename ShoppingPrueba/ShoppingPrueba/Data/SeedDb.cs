@@ -94,9 +94,9 @@ namespace Shooping.Data
                 _context.countries.Add(new Country
                 {
                     Name = "Colombia",
-                    States = new List<States>()
+                    States = new List<State>()
                     {
-                        new States()
+                        new State()
                         {
                             Name = "Antioquia",
                             Cities = new List<City>() {
@@ -107,7 +107,7 @@ namespace Shooping.Data
                                 new City() { Name = "Rionegro" },
                             }
                         },
-                        new States()
+                        new State()
                         {
                             Name = "Bogotá",
                             Cities = new List<City>() {
@@ -123,9 +123,9 @@ namespace Shooping.Data
                 _context.countries.Add(new Country
                 {
                     Name = "Estados Unidos",
-                    States = new List<States>()
+                    States = new List<State>()
                     {
-                        new States()
+                        new State()
                         {
                             Name = "Florida",
                             Cities = new List<City>() {
@@ -136,7 +136,7 @@ namespace Shooping.Data
                                 new City() { Name = "Key West" },
                             }
                         },
-                        new States()
+                        new State()
                         {
                             Name = "Texas",
                             Cities = new List<City>() {

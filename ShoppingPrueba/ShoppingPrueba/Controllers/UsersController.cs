@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShoppingPrueba.Data;
 using ShoppingPrueba.Data.Entities;
@@ -12,62 +13,31 @@ using System.Threading.Tasks;
 
 namespace ShoppingPrueba.Controllers
 {
-    public class AccountController : Controller
+    [Authorize(Roles = "Admin")]
+    public class UsersController : Controller
     {
-        private readonly IUserHelper _userHelper;
         private readonly DataContext _context;
         private readonly ICombosHelper _combosHelper;
+        private readonly IUserHelper _userHelper;
         private readonly IBlobHelper _blobHelper;
-
-        //   private readonly IUserHelper _userHelper;
-        public AccountController(IUserHelper userHelper,DataContext context,ICombosHelper combosHelper, IBlobHelper blobHelper)
+        
+        public UsersController(DataContext context, IUserHelper userHelper, IBlobHelper blobHelper, ICombosHelper combosHelper)
         {
-            _userHelper = userHelper;
             _context = context;
             _combosHelper = combosHelper;
+            _userHelper = userHelper;
             _blobHelper = blobHelper;
         }
-
-        [HttpGet]
-        public IActionResult login() 
+        public async Task<IActionResult> Index()
         {
-            if (User.Identity.IsAuthenticated)  // esta logeado?
-            {
-                return RedirectToAction("Index", "Home");
-            }
-            return View(new LoginViewModel());
-        }
-        [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                Microsoft.AspNetCore.Identity.SignInResult result = await _userHelper.LoginAsync(model);
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-
-                ModelState.AddModelError(string.Empty, "Email o contraseña incorrectos.");
-            }
-
-            return View(model);
+            return View(await _context.Users.
+                Include(u=>u.City).
+                ThenInclude(c=>c.State).
+                ThenInclude(s=>s.Country).
+                ToListAsync());
         }
 
-
-        public async Task<IActionResult> logout() 
-        {
-            await _userHelper.LogoutAsync();
-            return RedirectToAction("Index", "Home");
-
-        }
-
-        public IActionResult NotAuthorized()
-        {
-            return View();
-        }
-
-        public async Task<IActionResult> Register()
+        public async Task<IActionResult> Create()
         {
             AddUserViewModel model = new()
             {
@@ -75,7 +45,7 @@ namespace ShoppingPrueba.Controllers
                 Countries = await _combosHelper.GetComboCountriesAsync(),
                 States = await _combosHelper.GetComboStatesAsync(0),
                 Cities = await _combosHelper.GetComboCitiesAsync(0),
-                UserType = UserType.User,
+                UserType = UserType.Admin,
             };
 
             return View(model);
@@ -83,7 +53,7 @@ namespace ShoppingPrueba.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(AddUserViewModel model)
+        public async Task<IActionResult> Create(AddUserViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -95,7 +65,7 @@ namespace ShoppingPrueba.Controllers
                 }
                 model.ImageId = imageId;
 
-                 User user = await _userHelper.AddUserAsync(model);
+                User user = await _userHelper.AddUserAsync(model);
                 if (user == null)
                 {
                     ModelState.AddModelError(string.Empty, "Este correo ya está siendo usado.");
@@ -107,19 +77,9 @@ namespace ShoppingPrueba.Controllers
                     return View(model);
                 }
 
-                LoginViewModel loginViewModel = new()
-                {
-                    Password = model.Password,
-                    RememberMe = false,
-                    Username = model.Username
-                };
 
-                var result2 = await _userHelper.LoginAsync(loginViewModel);
-
-                if (result2.Succeeded)
-                {
                     return RedirectToAction("Index", "Home");
-                }
+                
             }
 
             model.Countries = await _combosHelper.GetComboCountriesAsync();
@@ -154,7 +114,6 @@ namespace ShoppingPrueba.Controllers
 
             return Json(state.Cities.OrderBy(c => c.Name));
         }
-
-
     }
+
 }

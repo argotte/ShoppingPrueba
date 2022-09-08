@@ -40,8 +40,8 @@ namespace ShoppingPrueba.Data.Entities
         [Display(Name = "Foto")]
         public string ImageFullPath => ImageId == Guid.Empty
             ? $"https://localhost:44387/images/noimage.png"
-            : $"https://shoppingzulu.blob.core.windows.net/users/{ImageId}";
-
+            : $@"\Upload\Images";
+       // https://shoppingzulu.blob.core.windows.net/users/{ImageId}
         [Display(Name = "Tipo de usuario")]
         public UserType UserType { get; set; }
 
