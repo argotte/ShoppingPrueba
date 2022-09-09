@@ -78,7 +78,18 @@ namespace ShoppingPrueba.Helpers
         public async Task<User> GetUserAsync(string email)//se va al contexto ddatos y busca un suuario cuyo email seea igual el email q mendaron
                                                           //// pero como el usuario tiene relacion con ciudd lo quiero con city y todo
         {
-            return await _context.Users.Include(u => u.City).FirstOrDefaultAsync(u => u.Email == email);
+            return await _context.Users.Include(u => u.City)
+                .ThenInclude(c=>c.State)
+                .ThenInclude(s=>s.Country)
+                .FirstOrDefaultAsync(u => u.Email == email);
+        }
+
+        public async Task<User> GetUserAsync(Guid userId)
+        {
+            return await _context.Users.Include(u => u.City)
+            .ThenInclude(c => c.State)
+            .ThenInclude(s => s.Country)
+            .FirstOrDefaultAsync(u => u.Id == userId.ToString());
         }
 
         public async Task<bool> IsUserInRoleAsync(User user, string roleName)
@@ -94,6 +105,16 @@ namespace ShoppingPrueba.Helpers
         public async Task LogoutAsync()
         {
             await _signInManager.SignOutAsync();
+        }
+
+        public async Task<IdentityResult> ChangePasswordAsync(User user, string oldPassword, string newPassword)
+        {
+            return await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
+        }
+
+        public async Task<IdentityResult> UpdateUserAsync(User user)
+        {
+            return await _userManager.UpdateAsync(user);
         }
 
     }

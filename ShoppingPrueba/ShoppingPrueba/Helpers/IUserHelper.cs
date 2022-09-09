@@ -25,5 +25,12 @@ namespace ShoppingPrueba.Helpers
 
         Task LogoutAsync();
 
+        Task<IdentityResult> ChangePasswordAsync(User user, string oldPassword, string newPassword);
+
+        Task<IdentityResult> UpdateUserAsync(User user);
+
+        Task<User> GetUserAsync(Guid userId);
+
+
     }
 }
