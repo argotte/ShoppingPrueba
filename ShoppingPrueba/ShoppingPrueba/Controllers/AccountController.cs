@@ -48,6 +48,16 @@ namespace ShoppingPrueba.Controllers
                     return RedirectToAction("Index", "Home");
                 }
 
+                if (result.IsLockedOut)
+                {
+                    ModelState.AddModelError(string.Empty, "SU CUENTA HA SIDO BLOQUEADA POR 10 MINUTOS. INTENTE MAS TARDE ");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Email o contraseña incorrectos.");
+                }
+
+
                 ModelState.AddModelError(string.Empty, "Email o contraseña incorrectos.");
             }
 
@@ -215,6 +225,44 @@ namespace ShoppingPrueba.Controllers
             model.Cities = await _combosHelper.GetComboCitiesAsync(model.StateId);
             return View(model);
         }
+
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                if (model.OldPassword == model.NewPassword)
+                {
+                    ModelState.AddModelError(string.Empty, "Debes ingresar una contraseña diferente");
+                    return View(model);
+                }
+                var user = await _userHelper.GetUserAsync(User.Identity.Name);
+                if (user != null)
+                {
+                    var result = await _userHelper.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+                    if (result.Succeeded)
+                    {
+                        return RedirectToAction("ChangeUser");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, result.Errors.FirstOrDefault().Description);
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "USUARIO NO ENCONTRADO.");
+                }
+            }
+
+            return View(model);
+        }
+
 
     }
 }

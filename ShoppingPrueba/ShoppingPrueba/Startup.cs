@@ -44,6 +44,10 @@ namespace ShoppingPrueba
                 cfg.Password.RequireLowercase = false;
                 cfg.Password.RequireNonAlphanumeric = false;
                 cfg.Password.RequireUppercase = false;
+                cfg.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
+                cfg.Lockout.MaxFailedAccessAttempts = 5;
+                cfg.Lockout.AllowedForNewUsers = true;
+
                 //cfg.Password.RequiredLength = 6;
             }).AddEntityFrameworkStores<DataContext>();
 
