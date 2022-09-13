@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shooping.Data;
+using Shooping.Helpers;
 using ShoppingPrueba.Data;
 using ShoppingPrueba.Data.Entities;
 using ShoppingPrueba.Helpers;
@@ -38,6 +39,9 @@ namespace ShoppingPrueba
             //TODO: make strongest pw
             services.AddIdentity<User, IdentityRole>(cfg =>
             {
+                cfg.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
+                cfg.SignIn.RequireConfirmedEmail = true;
+// lo de arriba es para confirmar tu email
                 cfg.User.RequireUniqueEmail = true;
                 cfg.Password.RequireDigit = false;
                 cfg.Password.RequiredUniqueChars = 0;
@@ -49,8 +53,8 @@ namespace ShoppingPrueba
                 cfg.Lockout.AllowedForNewUsers = true;
 
                 //cfg.Password.RequiredLength = 6;
-            }).AddEntityFrameworkStores<DataContext>();
-
+            }).AddDefaultTokenProviders().AddEntityFrameworkStores<DataContext>();
+            // el AddDefaultTokenProviders fue implementado al confirmar lo del email
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -65,6 +69,7 @@ namespace ShoppingPrueba
             services.AddScoped<IUserHelper, UserHelper>();
             services.AddScoped<ICombosHelper, CombosHelper>();
             services.AddScoped<IBlobHelper, BlobHelper>();
+            services.AddScoped<IMailHelper, MailHelper>();
             services.AddRazorPages().AddRazorRuntimeCompilation();
         }
    

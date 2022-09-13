@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ShoppingPrueba.Common;
 using ShoppingPrueba.Data;
 using ShoppingPrueba.Data.Entities;
 using ShoppingPrueba.Enum;
@@ -20,13 +21,16 @@ namespace ShoppingPrueba.Controllers
         private readonly ICombosHelper _combosHelper;
         private readonly IUserHelper _userHelper;
         private readonly IBlobHelper _blobHelper;
-        
-        public UsersController(DataContext context, IUserHelper userHelper, IBlobHelper blobHelper, ICombosHelper combosHelper)
+        private readonly IMailHelper _mailHelper;
+
+
+        public UsersController(DataContext context, IUserHelper userHelper, IBlobHelper blobHelper, ICombosHelper combosHelper, IMailHelper mailHelper)
         {
             _context = context;
             _combosHelper = combosHelper;
             _userHelper = userHelper;
             _blobHelper = blobHelper;
+            _mailHelper = mailHelper;
         }
         public async Task<IActionResult> Index()
         {
@@ -76,9 +80,29 @@ namespace ShoppingPrueba.Controllers
 
                     return View(model);
                 }
+                string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+                string tokenLink = Url.Action("ConfirmEmail", "Account", new
+                {
+                    userid = user.Id,
+                    token = myToken
+                }, protocol: HttpContext.Request.Scheme);
 
+                Response response = _mailHelper.SendMail(
+                    $"{model.FirstName} {model.LastName}",
+                    model.Username,
+                    "Shopping - Confirmación de Email",
+                    $"<h1>Shopping - Confirmación de Email</h1>" +
+                        $"Para habilitar el usuario por favor hacer clicn en el siguiente link:, " +
+                        $"<p><a href = \"{tokenLink}\">Confirmar Email</a></p>");
+                if (response.IsSuccess)
+                {
+                    ViewBag.Message = "Las instrucciones para habilitar el admin han sido enviadas al correo.";
+                    return View(model);
+                }
 
-                    return RedirectToAction("Index", "Home");
+                ModelState.AddModelError(string.Empty, response.Message);
+
+                //return RedirectToAction("Index", "Home");
                 
             }
 

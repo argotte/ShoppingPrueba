@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ShoppingPrueba.Common;
 using ShoppingPrueba.Data;
 using ShoppingPrueba.Data.Entities;
 using ShoppingPrueba.Enum;
@@ -18,14 +20,16 @@ namespace ShoppingPrueba.Controllers
         private readonly DataContext _context;
         private readonly ICombosHelper _combosHelper;
         private readonly IBlobHelper _blobHelper;
+        private readonly IMailHelper _mailHelper;
 
         //   private readonly IUserHelper _userHelper;
-        public AccountController(IUserHelper userHelper,DataContext context,ICombosHelper combosHelper, IBlobHelper blobHelper)
+        public AccountController(IUserHelper userHelper,DataContext context,ICombosHelper combosHelper, IBlobHelper blobHelper,IMailHelper mailHelper)
         {
             _userHelper = userHelper;
             _context = context;
             _combosHelper = combosHelper;
             _blobHelper = blobHelper;
+            _mailHelper = mailHelper;
         }
 
         [HttpGet]
@@ -52,13 +56,14 @@ namespace ShoppingPrueba.Controllers
                 {
                     ModelState.AddModelError(string.Empty, "SU CUENTA HA SIDO BLOQUEADA POR 10 MINUTOS. INTENTE MAS TARDE ");
                 }
+                else if (result.IsNotAllowed)
+                {
+                    ModelState.AddModelError(string.Empty, "Debes confirmar tu cuenta para que sea habilitada.");
+                }
                 else
                 {
                     ModelState.AddModelError(string.Empty, "Email o contraseña incorrectos.");
                 }
-
-
-                ModelState.AddModelError(string.Empty, "Email o contraseña incorrectos.");
             }
 
             return View(model);
@@ -112,25 +117,32 @@ namespace ShoppingPrueba.Controllers
                     model.Countries = await _combosHelper.GetComboCountriesAsync();
                     model.States = await _combosHelper.GetComboStatesAsync(model.CountryId);
                     model.Cities = await _combosHelper.GetComboCitiesAsync(model.StateId);
-
-
                     return View(model);
                 }
 
-                LoginViewModel loginViewModel = new()
+                string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+                string tokenLink = Url.Action("ConfirmEmail", "Account", new
                 {
-                    Password = model.Password,
-                    RememberMe = false,
-                    Username = model.Username
-                };
-
-                var result2 = await _userHelper.LoginAsync(loginViewModel);
-
-                if (result2.Succeeded)
+                    userid = user.Id,
+                    token = myToken
+                }, protocol: HttpContext.Request.Scheme);
+                
+                Response response = _mailHelper.SendMail(
+                    $"{model.FirstName} {model.LastName}",
+                    model.Username,
+                    "Shopping - Confirmación de Email",
+                    $"<h1>Shopping - Confirmación de Email</h1>" +
+                        $"Para habilitar el usuario por favor hacer clicn en el siguiente link:, " +
+                        $"<p><a href = \"{tokenLink}\">Confirmar Email</a></p>");
+                if (response.IsSuccess)
                 {
-                    return RedirectToAction("Index", "Home");
+                    ViewBag.Message = "Las instrucciones para habilitar el usuario han sido enviadas al correo.";
+                    return View(model);
                 }
+
+                ModelState.AddModelError(string.Empty, response.Message);
             }
+           
 
             model.Countries = await _combosHelper.GetComboCountriesAsync();
             model.States = await _combosHelper.GetComboStatesAsync(model.CountryId);
@@ -262,7 +274,89 @@ namespace ShoppingPrueba.Controllers
 
             return View(model);
         }
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
+            {
+                return NotFound();
+            }
 
+            User user = await _userHelper.GetUserAsync(new Guid(userId));
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            IdentityResult result = await _userHelper.ConfirmEmailAsync(user, token);
+            if (!result.Succeeded)
+            {
+                return NotFound();
+            }
+
+            return View();
+        }
+
+        public IActionResult RecoverPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RecoverPassword(RecoverPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                User user = await _userHelper.GetUserAsync(model.Email);
+                if (user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "El email no corresponde a ningún usuario registrado.");
+                    return View(model);
+                }
+
+                string myToken = await _userHelper.GeneratePasswordResetTokenAsync(user);
+                string link = Url.Action(
+                    "ResetPassword",
+                    "Account",
+                    new { token = myToken }, protocol: HttpContext.Request.Scheme);
+                _mailHelper.SendMail(
+                    $"{user.FullName}",
+                    model.Email,
+                    "Shopping - Recuperación de Contraseña",
+                    $"<h1>Shopping - Recuperación de Contraseña</h1>" +
+                    $"Para recuperar la contraseña haga click en el siguiente enlace:" +
+                    $"<p><a href = \"{link}\">Reset Password</a></p>");
+                ViewBag.Message = "Las instrucciones para recuperar la contraseña han sido enviadas a su correo.";
+                return View();
+            }
+
+            return View(model);
+        }
+
+        public IActionResult ResetPassword(string token)
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            User user = await _userHelper.GetUserAsync(model.UserName);
+            if (user != null)
+            {
+                IdentityResult result = await _userHelper.ResetPasswordAsync(user, model.Token, model.Password);
+                if (result.Succeeded)
+                {
+                    ViewBag.Message = "Contraseña cambiada con éxito.";
+                    return View();
+                }
+
+                ViewBag.Message = "Error cambiando la contraseña.";
+                return View(model);
+            }
+
+            ViewBag.Message = "Usuario no encontrado.";
+            return View(model);
+        }
 
     }
 }
