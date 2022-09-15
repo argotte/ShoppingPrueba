@@ -14,5 +14,7 @@ namespace ShoppingPrueba.Data.Entities
         [MaxLength(50, ErrorMessage = "Campo {0} debe tener máximo {1} caracteres")]
         [Required(ErrorMessage = "El campo {0} es obligatorio")]
         public String Name { get; set; }
+        public ICollection<ProductCategory> ProductCategories { get; set; }
+
     }
 }

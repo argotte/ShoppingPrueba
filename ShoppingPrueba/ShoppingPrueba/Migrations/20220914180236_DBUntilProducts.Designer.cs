@@ -10,8 +10,8 @@ using ShoppingPrueba.Data;
 namespace ShoppingPrueba.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220708192414_AddUserEntities")]
-    partial class AddUserEntities
+    [Migration("20220914180236_DBUntilProducts")]
+    partial class DBUntilProducts
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -218,7 +218,81 @@ namespace ShoppingPrueba.Migrations
                     b.ToTable("countries");
                 });
 
-            modelBuilder.Entity("ShoppingPrueba.Data.Entities.States", b =>
+            modelBuilder.Entity("ShoppingPrueba.Data.Entities.Product", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<float>("Stock")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("ShoppingPrueba.Data.Entities.ProductCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ProductId", "CategoryId")
+                        .IsUnique()
+                        .HasFilter("[ProductId] IS NOT NULL AND [CategoryId] IS NOT NULL");
+
+                    b.ToTable("ProductCategories");
+                });
+
+            modelBuilder.Entity("ShoppingPrueba.Data.Entities.ProductImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<Guid>("ImageId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductImages");
+                });
+
+            modelBuilder.Entity("ShoppingPrueba.Data.Entities.State", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -393,14 +467,38 @@ namespace ShoppingPrueba.Migrations
 
             modelBuilder.Entity("ShoppingPrueba.Data.Entities.City", b =>
                 {
-                    b.HasOne("ShoppingPrueba.Data.Entities.States", "State")
+                    b.HasOne("ShoppingPrueba.Data.Entities.State", "State")
                         .WithMany("Cities")
                         .HasForeignKey("StateId");
 
                     b.Navigation("State");
                 });
 
-            modelBuilder.Entity("ShoppingPrueba.Data.Entities.States", b =>
+            modelBuilder.Entity("ShoppingPrueba.Data.Entities.ProductCategory", b =>
+                {
+                    b.HasOne("ShoppingPrueba.Data.Entities.Category", "Category")
+                        .WithMany("ProductCategories")
+                        .HasForeignKey("CategoryId");
+
+                    b.HasOne("ShoppingPrueba.Data.Entities.Product", "Product")
+                        .WithMany("ProductCategories")
+                        .HasForeignKey("ProductId");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("ShoppingPrueba.Data.Entities.ProductImage", b =>
+                {
+                    b.HasOne("ShoppingPrueba.Data.Entities.Product", "Product")
+                        .WithMany("ProductImages")
+                        .HasForeignKey("ProductId");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("ShoppingPrueba.Data.Entities.State", b =>
                 {
                     b.HasOne("ShoppingPrueba.Data.Entities.Country", "Country")
                         .WithMany("States")
@@ -418,6 +516,11 @@ namespace ShoppingPrueba.Migrations
                     b.Navigation("City");
                 });
 
+            modelBuilder.Entity("ShoppingPrueba.Data.Entities.Category", b =>
+                {
+                    b.Navigation("ProductCategories");
+                });
+
             modelBuilder.Entity("ShoppingPrueba.Data.Entities.City", b =>
                 {
                     b.Navigation("Users");
@@ -428,7 +531,14 @@ namespace ShoppingPrueba.Migrations
                     b.Navigation("States");
                 });
 
-            modelBuilder.Entity("ShoppingPrueba.Data.Entities.States", b =>
+            modelBuilder.Entity("ShoppingPrueba.Data.Entities.Product", b =>
+                {
+                    b.Navigation("ProductCategories");
+
+                    b.Navigation("ProductImages");
+                });
+
+            modelBuilder.Entity("ShoppingPrueba.Data.Entities.State", b =>
                 {
                     b.Navigation("Cities");
                 });
