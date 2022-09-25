@@ -45,7 +45,7 @@ namespace ShoppingPrueba.Data.Entities
         //TODO: Pending to change to the correct path
         [Display(Name = "Foto")]
         public string ImageFullPath => ProductImages == null || ProductImages.Count == 0
-            ? $"https://localhost:7057/images/noimage.png"
+            ? $"https://diegoshopping.azurewebsites.net"
             : ProductImages.FirstOrDefault().ImageFullPath;
     }
 

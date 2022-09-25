@@ -5,7 +5,7 @@ using ShoppingPrueba.Common;
 using ShoppingPrueba.Helpers;
 using System;
 
-namespace Shooping.Helpers
+namespace ShoppingPrueba.Helpers
 {
     public class MailHelper : IMailHelper
     {

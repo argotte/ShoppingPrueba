@@ -43,9 +43,8 @@ namespace ShoppingPrueba.Models
         //TODO: Pending to put the correct paths
         [Display(Name = "Foto")]
         public string ImageFullPath => ImageId == Guid.Empty
-            ? $"https://localhost:7057/images/noimage.png"
-            : $@"\Upload\Images";
-        //https://shoppingzulu.blob.core.windows.net/users/{ImageId}
+            ? $"https://diegoshopping.azurewebsites.net"
+            : $"https://shoppingstorageorion.blob.core.windows.net/users/{ImageId}";
 
         [Display(Name = "Image")]
         public IFormFile? ImageFile { get; set; }

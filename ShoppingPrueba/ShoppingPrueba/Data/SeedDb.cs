@@ -8,17 +8,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Shooping.Data
+namespace ShoppingPrueba.Data
 {
     public class SeedDb
     {
         private readonly DataContext _context;
         private readonly IUserHelper _userHelper;
+        private readonly IBlobHelper _blobHelper;
 
-        public SeedDb(DataContext context, IUserHelper userHelper)
+        public SeedDb(DataContext context, IUserHelper userHelper, IBlobHelper blobHelper)
         {
             _context = context;
             _userHelper = userHelper;
+            _blobHelper = blobHelper;
         }
 
         public async Task SeedAsync()
@@ -30,7 +32,14 @@ namespace Shooping.Data
             await CheckUserAsync("1010", "Juan", "Rod", "zulu@yopmail.com", "3211232", "Avenida Solano", UserType.Admin);
             await CheckUserAsync("1010", "Diego", "Argotte", "diegoargottez@gmail.com", "3211232", "Avenida Solano", UserType.Admin);
             await CheckUserAsync("1011", "George", "Lion", "jorgeleon@yopmail.com", "4485490", "El Marques", UserType.User);
+         //   await CheckProductsAsync();
+
         }
+
+        //private Task CheckProductsAsync()
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         private async Task<User> CheckUserAsync(
             string document,

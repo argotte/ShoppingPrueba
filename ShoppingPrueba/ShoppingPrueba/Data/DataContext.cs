@@ -20,6 +20,7 @@ namespace ShoppingPrueba.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Country> countries { get; set; }
 
+        public DbSet<TemporalSale> TemporalSales { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

@@ -35,13 +35,12 @@ namespace ShoppingPrueba.Data.Entities
 
         [Display(Name = "Foto")]
         public Guid ImageId { get; set; }
-
+        //  https://localhost:44387/images/noimage.png  https://diegoshopping.azurewebsites.net
         //TODO: Pending to put the correct paths
         [Display(Name = "Foto")]
         public string ImageFullPath => ImageId == Guid.Empty
-            ? $"https://localhost:44387/images/noimage.png"
-            : $@"\Upload\Images";
-       // https://shoppingzulu.blob.core.windows.net/users/{ImageId}
+            ? $"https://diegoshopping.azurewebsites.net"
+            : $"https://shoppingstorageorion.blob.core.windows.net/users/{ImageId}";
         [Display(Name = "Tipo de usuario")]
         public UserType UserType { get; set; }
 
